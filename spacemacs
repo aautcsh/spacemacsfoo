@@ -45,11 +45,13 @@ values."
      git
      markdown
      ;; org
+     ;;vim-powerline
      shell
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
-     ;; spell-checking
+     (shell :variables
+             shell-default-height 20
+             shell-default-position 'bottom
+             shell-default-full-span nil)
+     ; spell-checking
      ;; syntax-checking
      ;; version-control
      )
@@ -130,7 +132,11 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(spacemacs-dark
-                         spacemacs-light)
+                         spacemacs-light
+                         ;;brin
+                         ;;smyx
+                         ;;spolsky
+                         )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -138,7 +144,7 @@ values."
    dotspacemacs-default-font '("Source Code Pro"
                                :size 11
                                :weight light
-                               :width normal
+                               :width ultra-condensed
                                :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
@@ -234,11 +240,11 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 70
+   dotspacemacs-active-transparency 95
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 70
+   dotspacemacs-inactive-transparency 95
    ;; If non nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
    ;; If non nil show the color guide hint for transient state keys. (default t)
@@ -262,10 +268,11 @@ values."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   ;;dotspacemacs-line-numbers nil
-   dotspacemacs-line-numbers '(:disabled-for-modes
-                               text-mode
-                               :relative t)
+   dotspacemacs-line-numbers 'relative 
+   ;;dotspacemacs-line-numbers '(:disabled-for-modes
+   ;;                            text-mode
+   ;;                            :relative t)
+   ;;(dotspacemacs-line-numbers 'relative)
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -307,7 +314,9 @@ executes.
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
  
- 
+ (add-to-list 'load-path "~/.emacs.d/private/apex-mode/")
+ (add-to-list 'auto-mode-alist '("\\.cmp\\'" . html-mode))
+ (add-to-list 'auto-mode-alist '("\\.page\\'" . html-mode))
  )
 
 (defun dotspacemacs/user-config ()
@@ -327,8 +336,6 @@ you should place your code here."
 
   ;; COLORSCHEME
   ;;(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-  ;;(setq-default
-  ;;    dotspacemacs-themes '(monokai)))
 
   ;;GO
   (setq gofmt-command "goimports")
@@ -346,17 +353,28 @@ you should place your code here."
       mac-command-key-is-meta t)
 
   ;;(setq powerline-default-separator 'arrow)
-
+  
+  ;; APEX MODE
+  (require 'apex-mode)
+  
   ;; NEOTREE
   (require 'neotree)
   (setq neo-theme 'arrow)
 
-  ;; RANDOM SETTINGS
+  ;; Strict parantheses 
   (setq-default dotspacemacs-smartparens-strict-mode t)
+
+   ;; Transient Mode
+   (spacemacs/toggle-transparency)
+
+  ;; Initial frame size
   (setq initial-frame-alist '((top . 290) 
                               (left . 310) 
                               (width . 147) 
                               (height . 50)))
+
+  ;; Auto revert
+  (global-auto-revert-mode 1)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
