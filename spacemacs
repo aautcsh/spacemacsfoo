@@ -31,21 +31,25 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     javascript
-     go
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ivy
      ;; auto-completion
      ;; better-defaults
+     ivy
      emacs-lisp
+     c-c++
+     (c-c++ :variables
+            c-c++-default-mode-for-headers 'c-mode)
+     go
      git
+     python
+     javascript
      markdown
-     ;; org
-     ;;vim-powerline
+     evil-commentary
+     org
      shell
      (shell :variables
              shell-default-height 20
@@ -54,6 +58,7 @@ values."
      ; spell-checking
      ;; syntax-checking
      ;; version-control
+     ;;vim-powerline
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -122,7 +127,8 @@ values."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'."
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 5)
+   dotspacemacs-startup-lists '((bookmarks . 5)
+                                (recents . 5)
                                 (projects . 7))
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
@@ -240,11 +246,11 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 95
+   dotspacemacs-active-transparency 97
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 95
+   dotspacemacs-inactive-transparency 97
    ;; If non nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
    ;; If non nil show the color guide hint for transient state keys. (default t)
@@ -313,7 +319,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
- 
+
  (add-to-list 'load-path "~/.emacs.d/private/apex-mode/")
  (add-to-list 'auto-mode-alist '("\\.cmp\\'" . html-mode))
  (add-to-list 'auto-mode-alist '("\\.page\\'" . html-mode))
@@ -326,7 +332,7 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  
+
   ;; TAB keystroke
   (require 'evil)
   (define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
@@ -334,14 +340,15 @@ you should place your code here."
   ;;  (define-key evil-motion-state-map (kbd "C-i") 'evil-jump-forward))
   ;;(evil-define-key 'motion help-mode-map (kbd "<tab>") 'forward-button)
 
-  ;; COLORSCHEME
-  ;;(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  ;; Custom color themes
+  ;;(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/spacemacs-theme-custom/")
+  ;;(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/monokai")
 
-  ;;GO
+  ;; Golang
   (setq gofmt-command "goimports")
   ;;(go :variables go-tab-width 2)
 
-  ;; INDENTATION
+  ;; Indentation
   (setq-default indent-tabs-mode nil)
   (setq tab-width 2)
 
@@ -352,25 +359,31 @@ you should place your code here."
       mac-allow-anti-aliasing t
       mac-command-key-is-meta t)
 
-  ;;(setq powerline-default-separator 'arrow)
-  
-  ;; APEX MODE
-  (require 'apex-mode)
-  
-  ;; NEOTREE
-  (require 'neotree)
-  (setq neo-theme 'arrow)
+  ;; Powerline
+  (require 'powerline)
+  ;; Configuration values
+  ;;    alternate, arrow, *arrow fade, bar, box, brace*, butt,
+  ;;    chamfer, *contour, curve, *rounded, *roundstub,
+  ;;    slant, *wave, zigzag, nil
+  (setq powerline-default-separator 'rounded)
 
-  ;; Strict parantheses 
+  ;; Salesforce syntax highlighting
+  (require 'apex-mode)
+
+  ;; Neotree
+  (require 'neotree)
+  (setq neo-theme 'ascii)
+
+  ;; Strict parantheses
   (setq-default dotspacemacs-smartparens-strict-mode t)
 
-   ;; Transient Mode
+   ;; Transient mode
    (spacemacs/toggle-transparency)
 
   ;; Initial frame size
-  (setq initial-frame-alist '((top . 290) 
-                              (left . 310) 
-                              (width . 147) 
+  (setq initial-frame-alist '((top . 290)
+                              (left . 310)
+                              (width . 147)
                               (height . 50)))
 
   ;; Auto revert
@@ -386,7 +399,7 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode go-guru go-eldoc go-mode ws-butler winum wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra info+ indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eval-sexp-fu highlight elisp-slime-nav dumb-jump popup diminish define-word counsel-projectile projectile pkg-info epl counsel swiper column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed ace-link which-key undo-tree org-plus-contrib ivy hydra evil-unimpaired f s dash async aggressive-indent adaptive-wrap ace-window avy))))
+    (org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional cython-mode anaconda-mode pythonic web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode go-guru go-eldoc go-mode ws-butler winum wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra info+ indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eval-sexp-fu highlight elisp-slime-nav dumb-jump popup diminish define-word counsel-projectile projectile pkg-info epl counsel swiper column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed ace-link which-key undo-tree org-plus-contrib ivy hydra evil-unimpaired f s dash async aggressive-indent adaptive-wrap ace-window avy))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
